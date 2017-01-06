@@ -3205,7 +3205,7 @@ void kill_screen(const char* lcd_msg) {
    * Handlers for RepRap World Keypad input
    *
    */
-  #if ENABLED(REPRAPWORLD_KEYPAD) && !ENABLED(ADC_KEYPAD)
+  #if ENABLED(REPRAPWORLD_KEYPAD) && DISABLED(ADC_KEYPAD)
     void _reprapworld_keypad_move(AxisEnum axis, int dir) {
       move_menu_scale = REPRAPWORLD_KEYPAD_MOVE_STEP;
       encoderPosition = dir;
@@ -3439,8 +3439,9 @@ void lcd_update() {
   #if ENABLED(ULTIPANEL)
     static millis_t return_to_status_ms = 0;
     manage_manual_move();
+  #endif
 
-    lcd_buttons_update();
+  lcd_buttons_update();
 
     #if ENABLED(AUTO_BED_LEVELING_UBL)
       const bool UBL_CONDITION = !ubl.has_control_of_lcd_panel;
@@ -3448,6 +3449,7 @@ void lcd_update() {
       constexpr bool UBL_CONDITION = true;
     #endif
 
+  #if ENABLED(ULTIPANEL)
     // If the action button is pressed...
     if (UBL_CONDITION && LCD_CLICKED) {
       if (!wait_for_unclick) {           // If not waiting for a debounce release:
@@ -3506,40 +3508,47 @@ void lcd_update() {
 
     #if ENABLED(ADC_KEYPAD)
       static uint8_t adc_steps = 0;
-      if (buttons_reprapworld_keypad != 0)
-      {
+      if (buttons_reprapworld_keypad != 0) {
         adc_steps++;
-        if(adc_steps > 20)
+        if(adc_steps > 20) {
           adc_steps = 20;
+        }
 
         lcd_quick_feedback();
         lcdDrawUpdate = LCDVIEW_REDRAW_NOW;
         return_to_status_ms = millis() + LCD_TIMEOUT_TO_STATUS;
-        if (encoderDirection == -1) // side effect which signals we are inside a menu
-        {
-          if (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_DOWN)
+        if (encoderDirection == -1) { // side effect which signals we are inside a menu
+          if (buttons_reprapworld_keypad & EN_REPRAPWORLD_KEYPAD_DOWN) {
             encoderPosition -= ENCODER_STEPS_PER_MENU_ITEM;
-          else if (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_UP)
+          }
+          else if (buttons_reprapworld_keypad & EN_REPRAPWORLD_KEYPAD_UP) {
             encoderPosition += ENCODER_STEPS_PER_MENU_ITEM;
-          else if (buttons_reprapworld_keypad & EN_REPRAPWORLD_KEYPAD_LEFT)
+          }
+          else if (buttons_reprapworld_keypad & EN_REPRAPWORLD_KEYPAD_LEFT) {
             menu_action_back();
-          else if (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_RIGHT)
+          }
+          else if (buttons_reprapworld_keypad & EN_REPRAPWORLD_KEYPAD_RIGHT) {
             // enqueue_and_echo_commands_P(PSTR("M0 Pause"));
             lcd_return_to_status();
+          }
         }
-        else
-        {
+        else {
           int8_t step = 1;
-          if (adc_steps > 10)
+          if (adc_steps > 10) {
             step = 10;
-          if (adc_steps > 19)
+          }
+          if (adc_steps > 19) {
             step = 100;
-          if (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_DOWN)
+          }
+          if (buttons_reprapworld_keypad & EN_REPRAPWORLD_KEYPAD_DOWN) {
             encoderPosition += ENCODER_PULSES_PER_STEP  * step;
-          else if (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_UP)
+          }
+          else if (buttons_reprapworld_keypad & EN_REPRAPWORLD_KEYPAD_UP) {
             encoderPosition -= ENCODER_PULSES_PER_STEP  * step;
-          else if (buttons_reprapworld_keypad&EN_REPRAPWORLD_KEYPAD_RIGHT)
+          }
+          else if (buttons_reprapworld_keypad & EN_REPRAPWORLD_KEYPAD_RIGHT) {
             encoderPosition = 0;
+          }
         }
       #ifdef ADC_KEYPAD_DEBUG
         SERIAL_PROTOCOLPGM("buttons_reprapworld_keypad = ");
@@ -3548,8 +3557,7 @@ void lcd_update() {
         SERIAL_PROTOCOLLN((unsigned long)encoderPosition);
       #endif
       }
-      else if(!thermalManager.current_ADCKey_raw)
-      {
+      else if(!thermalManager.current_ADCKey_raw) {
         // reset stepping acceleration
         adc_steps = 0;
       }
@@ -3959,14 +3967,12 @@ void lcd_reset_alert_level() { lcd_status_message_level = 0; }
 
 #if ENABLED(ADC_KEYPAD)
   #define	ADC_KEY_NUM		8
-  typedef struct
-  {
+  typedef struct {
     unsigned short ADCKeyValueMin;
     unsigned short ADCKeyValueMax;
     unsigned char  ADCKeyNo;
   }_stADCKeypadTable_;
-  _stADCKeypadTable_ stADCKeyTable[ADC_KEY_NUM] =
-  {
+  _stADCKeypadTable_ stADCKeyTable[ADC_KEY_NUM] = {
     //VALUE_MIN, VALUE_MAX , KEY
     { 4000,4096, BLEN_REPRAPWORLD_KEYPAD_F1 + 1 }, //F1
     { 4000,4096, BLEN_REPRAPWORLD_KEYPAD_F2 + 1 }, //F2
@@ -3978,21 +3984,16 @@ void lcd_reset_alert_level() { lcd_status_message_level = 0; }
     { 1150,1450, BLEN_REPRAPWORLD_KEYPAD_MIDDLE + 1 }, //ENTER
   };
 
-  unsigned char get_ADC_keyValue(void)
-  {
-    if (thermalManager.ADCKey_count >= 16)
-    {
+  unsigned char get_ADC_keyValue(void) {
+    if (thermalManager.ADCKey_count >= 16) {
       unsigned short currentkpADCValue = (thermalManager.current_ADCKey_raw >> 2);
       // Uncomment following line to debug the values
       //SERIAL_PROTOCOLLN(currentkpADCValue);
       thermalManager.current_ADCKey_raw = 0;
       thermalManager.ADCKey_count = 0;
-      if (currentkpADCValue < 4000)
-      {
-        for (unsigned char i = 0; i<ADC_KEY_NUM; i++)
-        {
-          if ((currentkpADCValue > stADCKeyTable[i].ADCKeyValueMin) && (currentkpADCValue < stADCKeyTable[i].ADCKeyValueMax))
-          {
+      if (currentkpADCValue < 4000) {
+        for (unsigned char i = 0; i<ADC_KEY_NUM; i++) {
+          if ((currentkpADCValue > stADCKeyTable[i].ADCKeyValueMin) && (currentkpADCValue < stADCKeyTable[i].ADCKeyValueMax)) {
             return stADCKeyTable[i].ADCKeyNo;
           }
         }
@@ -4003,3 +4004,4 @@ void lcd_reset_alert_level() { lcd_status_message_level = 0; }
 #endif
 
 #endif // ULTRA_LCD
+

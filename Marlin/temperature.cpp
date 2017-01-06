@@ -1624,6 +1624,7 @@ void Temperature::isr() {
   static uint8_t pwm_count = _BV(SOFT_PWM_SCALE);
   // avoid multiple loads of pwm_count
   uint8_t pwm_count_tmp = pwm_count;
+
   #if ENABLED(ADC_KEYPAD)
     static unsigned int raw_ADCKey_value = 0;
   #endif
@@ -1999,7 +2000,7 @@ void Temperature::isr() {
           raw_filwidth_value -= (raw_filwidth_value >> 7); // Subtract 1/128th of the raw_filwidth_value
           raw_filwidth_value += ((unsigned long)ADC << 7); // Add new ADC reading, scaled by 128
         }
-      break;
+        break;
     #endif
 
     #if ENABLED(ADC_KEYPAD)
