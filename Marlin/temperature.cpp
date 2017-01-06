@@ -217,6 +217,11 @@ uint8_t Temperature::soft_pwm[HOTENDS];
   uint8_t Temperature::ADCKey_count = 0;
 #endif
 
+#if ENABLED(ADC_KEYPAD)
+  uint32_t Temperature::current_ADCKey_raw = 0;
+  uint8_t Temperature::ADCKey_count = 0;
+#endif
+
 #if HAS_PID_HEATING
 
   void Temperature::PID_autotune(float temp, int hotend, int ncycles, bool set_result/*=false*/) {
