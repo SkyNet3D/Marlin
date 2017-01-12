@@ -303,8 +303,8 @@ bool Sd2Card::init(uint8_t sckRateID, uint8_t chipSelectPin) {
   uint16_t t0 = (uint16_t)millis();
   uint32_t arg;
 
-  // If init takes more than 4s it could trigger
-  // watchdog leading to a reboot loop.
+  // it may last to long total
+  // and will hang if not reset here
   #if ENABLED(USE_WATCHDOG)
     watchdog_reset();
   #endif
