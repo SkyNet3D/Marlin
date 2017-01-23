@@ -3430,24 +3430,26 @@ typedef struct
 _stADCKeypadTable_ stADCKeyTable[ADC_KEY_NUM] =
 {
 	//VALUE_MIN, VALUE_MAX , KEY
-	{ 2000,2048, BLEN_REPRAPWORLD_KEYPAD_F1 + 1 },		//F1
-	{ 2000,2048, BLEN_REPRAPWORLD_KEYPAD_F2 + 1 },		//F2
-	{ 2000,2048, BLEN_REPRAPWORLD_KEYPAD_F3 + 1 },		//F3
-	{ 150,250, 	BLEN_REPRAPWORLD_KEYPAD_LEFT + 1 },	//LEFT
-	{ 950,1100, BLEN_REPRAPWORLD_KEYPAD_RIGHT + 1 },	//RIGHT
-	{ 280,440, 	BLEN_REPRAPWORLD_KEYPAD_UP + 1 },		//UP
-	{ 1340,1440, BLEN_REPRAPWORLD_KEYPAD_DOWN + 1 },	//DOWN
-	{ 580,730, BLEN_REPRAPWORLD_KEYPAD_MIDDLE + 1 },	//ENTER
+	{ 4000,4096, BLEN_REPRAPWORLD_KEYPAD_F1 + 1 },		//F1
+	{ 4000,4096, BLEN_REPRAPWORLD_KEYPAD_F2 + 1 },		//F2
+	{ 4000,4096, BLEN_REPRAPWORLD_KEYPAD_F3 + 1 },		//F3
+	{ 300,500, 	BLEN_REPRAPWORLD_KEYPAD_LEFT + 1 },	//LEFT
+	{ 1900,2200, BLEN_REPRAPWORLD_KEYPAD_RIGHT + 1 },	//RIGHT
+	{ 570,870, 	BLEN_REPRAPWORLD_KEYPAD_UP + 1 },		//UP
+	{ 2670,2870, BLEN_REPRAPWORLD_KEYPAD_DOWN + 1 },	//DOWN
+	{ 1150,1450, BLEN_REPRAPWORLD_KEYPAD_MIDDLE + 1 },	//ENTER
 };
 
 unsigned char get_ADC_keyValue(void)
 {
 	if (thermalManager.ADCKey_count >= 16)
 	{
-		unsigned short currentkpADCValue = (thermalManager.current_ADCKey_raw / 8);
+		unsigned short currentkpADCValue = (thermalManager.current_ADCKey_raw >> 2);
+    // Uncomment following line to debug the values
+		//SERIAL_PROTOCOLLN(currentkpADCValue);
 		thermalManager.current_ADCKey_raw = 0;
 		thermalManager.ADCKey_count = 0;
-		if (currentkpADCValue < 1600)
+		if (currentkpADCValue < 4000)
 		{
 			for (unsigned char i = 0; i<ADC_KEY_NUM; i++)
 			{
