@@ -899,8 +899,8 @@
 //#define Z_SAFE_HOMING
 
 #if ENABLED(Z_SAFE_HOMING)
-  #define Z_SAFE_HOMING_X_POINT (X_MAX_POS / 2)    // X point for Z homing when homing all axis (G28).
-  #define Z_SAFE_HOMING_Y_POINT (Y_MAX_POS / 2)    // Y point for Z homing when homing all axis (G28).
+  #define Z_SAFE_HOMING_X_POINT ((RIGHT_PROBE_BED_POSITION - LEFT_PROBE_BED_POSITION) / 2) + X_PROBE_OFFSET_FROM_EXTRUDER + LEFT_PROBE_BED_POSITION     // X point for Z homing when homing all axis (G28).
+  #define Z_SAFE_HOMING_Y_POINT ((BACK_PROBE_BED_POSITION - FRONT_PROBE_BED_POSITION) / 2) + Y_PROBE_OFFSET_FROM_EXTRUDER + FRONT_PROBE_BED_POSITION    // Y point for Z homing when homing all axis (G28).
 #endif
 
 // Homing speeds (mm/m)
