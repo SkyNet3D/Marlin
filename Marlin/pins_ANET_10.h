@@ -32,9 +32,6 @@
 
 #include "pins_SANGUINOLOLU_12.h"
 
-#undef BOARD_NAME
-#define BOARD_NAME "Anet"
-
 #undef LED_PIN
 #undef FAN_PIN
 

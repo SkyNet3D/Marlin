@@ -2000,8 +2000,8 @@ void Temperature::isr() {
           raw_filwidth_value -= (raw_filwidth_value >> 7); // Subtract 1/128th of the raw_filwidth_value
           raw_filwidth_value += ((unsigned long)ADC << 7); // Add new ADC reading, scaled by 128
         }
-        break;
-    #endif
+      break;
+	#endif
 
     #if ENABLED(ADC_KEYPAD)
       case Prepare_ADC_KEY:
