@@ -217,6 +217,11 @@ uint8_t Temperature::soft_pwm[HOTENDS];
   uint8_t Temperature::ADCKey_count = 0;
 #endif
 
+#if ENABLED(ADC_KEYPAD)
+  uint32_t Temperature::current_ADCKey_raw = 0;
+  uint8_t Temperature::ADCKey_count = 0;
+#endif
+
 #if HAS_PID_HEATING
 
   void Temperature::PID_autotune(float temp, int hotend, int ncycles, bool set_result/*=false*/) {
@@ -1619,6 +1624,7 @@ void Temperature::isr() {
   static uint8_t pwm_count = _BV(SOFT_PWM_SCALE);
   // avoid multiple loads of pwm_count
   uint8_t pwm_count_tmp = pwm_count;
+
   #if ENABLED(ADC_KEYPAD)
     static unsigned int raw_ADCKey_value = 0;
   #endif
@@ -1995,7 +2001,7 @@ void Temperature::isr() {
           raw_filwidth_value += ((unsigned long)ADC << 7); // Add new ADC reading, scaled by 128
         }
       break;
-    #endif
+	#endif
 
     #if ENABLED(ADC_KEYPAD)
       case Prepare_ADC_KEY:
