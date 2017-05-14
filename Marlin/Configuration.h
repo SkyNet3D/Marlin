@@ -1177,11 +1177,8 @@
  */
 //#define ULTRA_LCD   // Character based
 //#define DOGLCD      // Full graphics display
-
 #define ANET_KEYPAD_LCD
 //#define ANET_FULL_GRAPHICS_LCD
-// RepRap Discount (with Anet Adapter wiring see: http://www.thingiverse.com/thing:2103748)
-//#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
 
 /**
  * SD CARD
